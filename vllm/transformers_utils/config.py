@@ -529,6 +529,15 @@ def patch_rope_parameters(config: PretrainedConfig) -> None:
     """Provide backwards compatibility for RoPE."""
     from vllm.config.utils import getattr_iter
 
+    # Shensi stores per-branch RoPE parameters nested under "main"/"compress";
+    # vLLM's RoPE handling expects the flat single-branch form, and the
+    # per-branch theta is already mirrored in rope_theta / compress_rope_theta.
+    rope_parameters = getattr(config, "rope_parameters", None)
+    if isinstance(rope_parameters, dict) and "main" in rope_parameters:
+        main_rope = rope_parameters["main"]
+        if isinstance(main_rope, dict):
+            config.rope_parameters = dict(main_rope)
+
     # Older custom models may use non-standard field names which need patching.
     names = ["rope_theta", "rotary_emb_base"]
     rope_theta = getattr_iter(config, names, None, warn=True)

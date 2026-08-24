@@ -38,6 +38,7 @@ Checking if the modeling backend is Transformers is as simple as:
 
 ```python
 from vllm import LLM
+
 llm = LLM(model=...)  # Name or path of your model
 llm.apply_model(lambda model: print(type(model)))
 ```
@@ -90,9 +91,9 @@ To make your model compatible with the Transformers modeling backend, it needs:
 <summary>modeling_my_model.py</summary>
 
 ```python
-
 from transformers import PreTrainedModel
 from torch import nn
+
 
 class MyAttention(nn.Module):
     is_causal = False  # Only do this for encoder-only models
@@ -109,10 +110,11 @@ class MyAttention(nn.Module):
         )
         ...
 
+
 # Only do this for mixture-of-experts models
 class MyExperts(nn.ModuleList):
-    def forward(self, hidden_states, top_k_index, top_k_weights):
-        ...
+    def forward(self, hidden_states, top_k_index, top_k_weights): ...
+
 
 # Only do this for mixture-of-experts models
 class MySparseMoEBlock(nn.Module):
@@ -125,6 +127,7 @@ class MySparseMoEBlock(nn.Module):
         ...
         hidden_states = self.experts(hidden_states, top_k_index, top_k_weights)
         ...
+
 
 class MyModel(PreTrainedModel):
     _supports_attention_backend = True
@@ -146,8 +149,8 @@ For your model to be compatible with vLLM's tensor parallel and/or pipeline para
 <summary>configuration_my_model.py</summary>
 
 ```python
-
 from transformers import PretrainedConfig
+
 
 class MyConfig(PretrainedConfig):
     base_model_tp_plan = {
@@ -454,6 +457,7 @@ th {
 | `SarvamMoEForCausalLM` | Sarvam 2 | `sarvamai/sarvam2-30b-a3b`, etc. | ✅︎ | ✅︎ |
 | `SarvamMLAForCausalLM` | Sarvam 2 | `sarvamai/sarvam2-105b-a9b`, etc. | | ✅︎ |
 | `SeedOssForCausalLM` | SeedOss | `ByteDance-Seed/Seed-OSS-36B-Instruct`, etc. | ✅︎ | ✅︎ |
+| `ShensiForCausalLM` | Shensi | `louzongzhi/Shensi-Nano`, etc. | | |
 | `SolarForCausalLM` | Solar Pro | `upstage/solar-pro-preview-instruct`, etc. | ✅︎ | ✅︎ |
 | `StableLmForCausalLM` | StableLM | `stabilityai/stablelm-3b-4e1t`, `stabilityai/stablelm-base-alpha-7b-v2`, etc. | | |
 | `Step1ForCausalLM` | Step-Audio | `stepfun-ai/Step-Audio-EditX`, etc. | ✅︎ | ✅︎ |
@@ -606,6 +610,7 @@ These models primarily accept the [`LLM.generate`](./generative_models.md#llmgen
 | `Qwen3OmniMoeThinkerForConditionalGeneration` | Qwen3-Omni | T + I<sup>E+</sup> + V<sup>E+</sup> + A<sup>+</sup> | `Qwen/Qwen3-Omni-30B-A3B-Instruct`, `Qwen/Qwen3-Omni-30B-A3B-Thinking` | ✅︎ | ✅︎ |
 | `Qwen3ASRForConditionalGeneration` | Qwen3-ASR | T + A<sup>+</sup> | `Qwen/Qwen3-ASR-1.7B` | ✅︎ | ✅︎ |
 | `RForConditionalGeneration` | R-VL-4B | T + I<sup>E+</sup> | `YannQi/R-4B` | | ✅︎ |
+| `ShensiVlForConditionalGeneration` | Shensi-VL | T + I | `louzongzhi/Shensi-VL-Nano`, etc. | | ✅︎ |
 | `SkyworkR1VChatModel` | Skywork-R1V-38B | T + I | `Skywork/Skywork-R1V-38B` | | ✅︎ |
 | `SmolVLMForConditionalGeneration` | SmolVLM2 | T + I | `SmolVLM2-2.2B-Instruct` | ✅︎ | |
 | `Step3VLForConditionalGeneration` | Step3-VL | T + I<sup>+</sup> | `stepfun-ai/step3` | | ✅︎ |

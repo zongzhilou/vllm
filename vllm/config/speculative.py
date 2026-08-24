@@ -1254,6 +1254,8 @@ class SpeculativeConfig:
                     or _QWEN3_OMNI_DSPARK_ARCHITECTURE
                     in self.draft_model_config.architectures
                     or "Gemma4DSparkModel" in self.draft_model_config.architectures
+                    or "ShensiDSparkModel" in self.draft_model_config.architectures
+                    or "ShensiVlDSparkModel" in self.draft_model_config.architectures
                     or (
                         "DSparkDraftModel" in self.draft_model_config.architectures
                         and self.draft_model_config.hf_config.model_type == "qwen3"
@@ -1330,6 +1332,9 @@ class SpeculativeConfig:
                     not in self.draft_model_config.architectures
                     and "Gemma4DSparkModel" not in self.draft_model_config.architectures
                     and "K3DSparkModel" not in self.draft_model_config.architectures
+                    and "ShensiDSparkModel" not in self.draft_model_config.architectures
+                    and "ShensiVlDSparkModel"
+                    not in self.draft_model_config.architectures
                 ):
                     # DeepSeek-V4 DSpark reuses the full DeepSeek-V4 config
                     # and its weights ship in the target checkpoint.

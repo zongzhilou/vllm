@@ -539,6 +539,11 @@ _TEXT_GENERATION_EXAMPLE_MODELS = {
         "ByteDance-Seed/Seed-OSS-36B-Instruct",
         trust_remote_code=True,
     ),
+    "ShensiForCausalLM": _HfExamplesInfo(
+        "louzongzhi/Shensi-Nano",
+        is_available_online=False,
+        min_transformers_version="5.1.0",
+    ),
     "SmolLM3ForCausalLM": _HfExamplesInfo("HuggingFaceTB/SmolLM3-3B"),
     "StableLmForCausalLM": _HfExamplesInfo("stabilityai/stablelm-3b-4e1t"),
     "Starcoder2ForCausalLM": _HfExamplesInfo("bigcode/starcoder2-3b"),
@@ -1369,6 +1374,11 @@ _MULTIMODAL_EXAMPLE_MODELS = {
         hf_overrides={"architectures": ["Qwen3ASRForcedAlignerForTokenClassification"]},
     ),
     "RForConditionalGeneration": _HfExamplesInfo("YannQi/R-4B", trust_remote_code=True),
+    "ShensiVlForConditionalGeneration": _HfExamplesInfo(
+        "louzongzhi/Shensi-VL-Nano",
+        is_available_online=False,
+        min_transformers_version="5.1.0",
+    ),
     "SkyworkR1VChatModel": _HfExamplesInfo(
         "Skywork/Skywork-R1V-38B",
         trust_remote_code=True,

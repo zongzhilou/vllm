@@ -92,6 +92,7 @@ def _fused_indexer_q_rope_quant_kernel(
     FP8_MAX: tl.constexpr = 448.0,
     USE_FNUZ: tl.constexpr = False,
     USE_EXPLICIT_FMA: tl.constexpr = False,
+    NOPE_BLOCK: tl.constexpr = 0,
 ):
     # Layout matches the unfused reference (DeepseekV4ScalingRotaryEmbedding
     # + per_token_group_quant_fp8): GPT-J interleaved RoPE applied to the
@@ -134,8 +135,11 @@ def _fused_indexer_q_rope_quant_kernel(
 
     amax = tl.maximum(tl.max(tl.abs(r_even)), tl.max(tl.abs(r_odd)))
     if INDEX_Q_NOPE_DIM > 0:
-        nope_offset = tl.arange(0, INDEX_Q_NOPE_DIM)
-        x_nope = tl.load(base_ptr + nope_offset).to(tl.float32)
+        nope_offset = tl.arange(0, NOPE_BLOCK)
+        nope_mask = nope_offset < INDEX_Q_NOPE_DIM
+        x_nope = tl.load(base_ptr + nope_offset, mask=nope_mask, other=0.0).to(
+            tl.float32
+        )
         amax = tl.maximum(amax, tl.max(tl.abs(x_nope)))
     index_q_scale = tl.div_rn(tl.maximum(amax, 1e-4), FP8_MAX)
     index_q_scale = tl.math.exp2(tl.math.ceil(tl.math.log2(index_q_scale)))
@@ -150,6 +154,7 @@ def _fused_indexer_q_rope_quant_kernel(
         tl.store(
             fp8_base_ptr + nope_offset,
             tl.div_rn(x_nope, index_q_scale).to(fp8_dtype),
+            mask=nope_mask,
         )
     fp8_rot_base = fp8_base_ptr + INDEX_Q_NOPE_DIM
     tl.store(
@@ -474,6 +479,9 @@ def fused_indexer_q_rope_quant(
             FP8_MAX=fp8_max,
             USE_FNUZ=use_fnuz,
             USE_EXPLICIT_FMA=current_platform.is_rocm(),
+            NOPE_BLOCK=triton.next_power_of_2(
+                index_q_head_dim - index_q_cos_sin_cache.shape[-1]
+            ),
             num_warps=1,  # TODO: Tune this
         )
     return index_q_fp8, index_weights_out

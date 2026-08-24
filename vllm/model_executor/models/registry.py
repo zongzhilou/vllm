@@ -199,6 +199,11 @@ _TEXT_GENERATION_MODELS = {
     "SarvamMoEForCausalLM": ("sarvam", "SarvamMoEForCausalLM"),
     "SarvamMLAForCausalLM": ("sarvam", "SarvamMLAForCausalLM"),
     "SeedOssForCausalLM": ("seed_oss", "SeedOssForCausalLM"),
+    "ShensiForCausalLM": ("vllm.models.shensi", "ShensiForCausalLM"),
+    "ShensiVlForConditionalGeneration": (
+        "vllm.models.shensi_vl",
+        "ShensiVlForConditionalGeneration",
+    ),
     "Step1ForCausalLM": ("step1", "Step1ForCausalLM"),
     "Step3TextForCausalLM": ("step3_text", "Step3TextForCausalLM"),
     "Step3p5ForCausalLM": ("step3p5", "Step3p5ForCausalLM"),
@@ -573,6 +578,10 @@ _MULTIMODAL_MODELS = {
         "Qwen3_5MoeForConditionalGeneration",
     ),
     "RForConditionalGeneration": ("rvl", "RForConditionalGeneration"),
+    "ShensiVlForConditionalGeneration": (
+        "vllm.models.shensi_vl",
+        "ShensiVlForConditionalGeneration",
+    ),
     "SkyworkR1VChatModel": ("skyworkr1v", "SkyworkR1VChatModel"),
     "SmolVLMForConditionalGeneration": ("smolvlm", "SmolVLMForConditionalGeneration"),
     "StepVLForConditionalGeneration": ("step_vl", "StepVLForConditionalGeneration"),
@@ -618,6 +627,11 @@ _SPECULATIVE_DECODING_MODELS = {
     "K3DSparkModel": (
         "vllm.models.kimi_k3.nvidia.dspark_mla",
         "K3DSparkForCausalLM",
+    ),
+    "ShensiDSparkModel": ("vllm.models.shensi.dspark", "DSparkShensiForCausalLM"),
+    "ShensiVlDSparkModel": (
+        "vllm.models.shensi_vl.dspark",
+        "DSparkShensiVlForCausalLM",
     ),
     "DFlashLagunaForCausalLM": ("laguna_dflash", "DFlashLagunaForCausalLM"),
     "Gemma4DSparkModel": ("gemma4_dspark", "Gemma4DSparkForCausalLM"),
