@@ -124,6 +124,21 @@ steps:
       commands:
       - pytest -v -s models/inkling/rocm
 
+- label: ":nvidia: (H200 MIG 35GB) Shensi"
+  key: shensi-unit-tests
+  timeout_in_minutes: 25
+  device: h200_35gb
+  source_file_dependencies:
+  - vllm/models/shensi/
+  - vllm/transformers_utils/configs/shensi.py
+  - tests/models/shensi/
+  - tests/models/registry.py
+  commands:
+    # Unit tests cover the config bridge and the Shensi-specific modules
+    # against the reference implementation; end-to-end coverage comes from the
+    # Basic Models jobs (tests/models/registry.py) once weights are public.
+    - pytest -v -s models/shensi
+
 - label: ":nvidia: (B200) Kimi K3"
   key: kimi-k3-unit-tests-b200
   timeout_in_minutes: 40

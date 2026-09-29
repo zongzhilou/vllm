@@ -38,6 +38,7 @@ logger = init_logger(__name__)
 
 MTPModelTypes = Literal[
     "deepseek_mtp",
+    "shensi_mtp",
     "dots3_note_mtp",
     "mimo_mtp",
     "mimo_v2_mtp",
@@ -693,16 +694,24 @@ class SpeculativeConfig:
                     ],
                 }
             )
-        if hf_config.model_type in ("deepseek_v4", "deepseek_v41"):
+        if hf_config.model_type in ("deepseek_v4", "deepseek_v41", "shensi"):
             # V4.1 has no classic-MTP draft: its checkpoints ship DSpark stages
             # under ``mtp.*``, so only V4 gets an MTP architecture here. The
             # DSpark path rewrites ``architectures`` itself;
             # ``method="mtp"`` on V4.1 is rejected below.
             is_v41 = hf_config.model_type == "deepseek_v41"
-            hf_config.model_type = "deepseek_mtp"
+            is_shensi = hf_config.model_type == "shensi"
+            hf_config.model_type = "shensi_mtp" if is_shensi else "deepseek_mtp"
             n_predict = getattr(hf_config, "num_nextn_predict_layers", None)
+            if is_shensi and not n_predict:
+                raise ValueError(
+                    "shensi MTP requires num_nextn_predict_layers > 0 in the "
+                    "checkpoint config"
+                )
             overrides = {"n_predict": n_predict}
-            if not is_v41:
+            if is_shensi:
+                overrides["architectures"] = ["ShensiMTPModel"]
+            elif not is_v41:
                 overrides["architectures"] = ["DeepSeekV4MTPModel"]
             hf_config.update(overrides)
         if hf_config.model_type in ("pangu_ultra_moe"):
@@ -1429,19 +1438,27 @@ class SpeculativeConfig:
                     not in self.draft_model_config.architectures
                     and "Gemma4DSparkModel" not in self.draft_model_config.architectures
                     and "K3DSparkModel" not in self.draft_model_config.architectures
+                    and "ShensiDSparkModel" not in self.draft_model_config.architectures
                 ):
                     # DeepSeek-V4(.1) DSpark reuses the full target config
                     # and its weights ship in the target checkpoint.
                     is_v41 = (
                         self.target_model_config.hf_config.model_type == "deepseek_v41"
                     )
-                    draft_hf_config = self.draft_model_config.hf_config
-                    draft_hf_config.model_type = (
-                        "deepseek_v41" if is_v41 else "deepseek_v4"
+                    is_shensi = (
+                        self.target_model_config.hf_config.model_type == "shensi"
                     )
-                    draft_hf_config.architectures = [
-                        "DSparkV41DraftModel" if is_v41 else "DSparkDraftModel"
-                    ]
+                    draft_hf_config = self.draft_model_config.hf_config
+                    if is_shensi:
+                        draft_hf_config.model_type = "shensi"
+                        draft_hf_config.architectures = ["ShensiDSparkModel"]
+                    else:
+                        draft_hf_config.model_type = (
+                            "deepseek_v41" if is_v41 else "deepseek_v4"
+                        )
+                        draft_hf_config.architectures = [
+                            "DSparkV41DraftModel" if is_v41 else "DSparkDraftModel"
+                        ]
                     self.draft_model_config.quantization = (
                         self.target_model_config.quantization
                     )

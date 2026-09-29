@@ -531,6 +531,10 @@ _TEXT_GENERATION_EXAMPLE_MODELS = {
         "ByteDance-Seed/Seed-OSS-36B-Instruct",
         trust_remote_code=True,
     ),
+    "ShensiForCausalLM": _HfExamplesInfo(
+        "louzongzhi/Shensi",
+        is_available_online=False,
+    ),
     "SmolLM3ForCausalLM": _HfExamplesInfo("HuggingFaceTB/SmolLM3-3B"),
     "StableLmForCausalLM": _HfExamplesInfo("stabilityai/stablelm-3b-4e1t"),
     "Starcoder2ForCausalLM": _HfExamplesInfo("bigcode/starcoder2-3b"),
@@ -1509,6 +1513,14 @@ _SPECULATIVE_DECODING_EXAMPLE_MODELS = {
         is_available_online=False,
         use_original_num_layers=True,  # DSpark has >1 draft block
     ),
+    "ShensiDSparkModel": _HfExamplesInfo(
+        "louzongzhi/Shensi",
+        speculative_model="louzongzhi/Shensi",
+        use_original_num_layers=True,  # DSpark has >1 draft block
+        # The Shensi DSpark fields (dspark_target_layer_ids, ...) are part of
+        # the training-side contract and are not in the published checkpoints.
+        is_available_online=False,
+    ),
     "K3DSparkModel": _HfExamplesInfo(
         "moonshotai/Kimi-K3",
         speculative_model="Inferact/Kimi-K3-DSpark",
@@ -1797,6 +1809,15 @@ _SPECULATIVE_DECODING_EXAMPLE_MODELS = {
         speculative_model="Qwen/Qwen3.5-35B-A3B",
     ),
     "Qwen4ExpMTP": _HfExamplesInfo("", is_available_online=False),
+    "ShensiMTPModel": _HfExamplesInfo(
+        "louzongzhi/Shensi",
+        speculative_model="louzongzhi/Shensi",
+        use_original_num_layers=True,
+        # The published Shensi config sets num_nextn_predict_layers=0; the
+        # draft stage needs at least one layer to exist.
+        hf_overrides={"num_nextn_predict_layers": 1},
+        is_available_online=False,
+    ),
     "Step3p5MTP": _HfExamplesInfo(
         "stepfun-ai/Step-3.5-Flash",
         speculative_model="stepfun-ai/Step-3.5-Flash",
