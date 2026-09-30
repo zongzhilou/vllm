@@ -6,11 +6,13 @@ import os
 import sys
 import types
 
-# In symlink mode (VLLM_FLASH_ATTN_SRC_DIR), cute/ is a symlink to the real
-# source tree and its files use `flash_attn.cute.*` imports (not rewritten).
-# Register a virtual `flash_attn` package so those imports resolve.
+# cute/ 里的文件用的是 `flash_attn.cute.*` 这套导入，两种形态都要让它们解析：
+# ① 符号链接模式（构建时给了 VLLM_FLASH_ATTN_SRC_DIR）：cute/ 指向真实源码树；
+# ② 随 wheel 装下来的自带快照（cute/ 是真目录，且与 requirements 里钉的
+#    nvidia-cutlass-dsl / quack-kernels 是配套的那一版）。
+# 已经装了 flash_attn / fa4 的话不动它（下面那句 not in sys.modules）。
 _cute_dir = os.path.join(os.path.dirname(__file__), "cute")
-if os.path.islink(_cute_dir) and "flash_attn" not in sys.modules:
+if os.path.isdir(_cute_dir) and "flash_attn" not in sys.modules:
     _fa_mod = types.ModuleType("flash_attn")
     _fa_mod.__path__ = [os.path.dirname(os.path.realpath(_cute_dir))]
     _fa_mod.__package__ = "flash_attn"
