@@ -30,13 +30,13 @@ class ShensiConfig(PreTrainedConfig):
     hc_eps = 1.0e-6
     hc_sinkhorn_iters = 20
     vocab_size: int = 129280
-    hidden_size: int = 2560
-    moe_intermediate_size: int = 1280
-    num_hidden_layers: int = 35
-    num_attention_heads: int = 32
+    hidden_size: int = 1280
+    moe_intermediate_size: int = 800
+    num_hidden_layers: int = 19
+    num_attention_heads: int = 16
     num_key_value_heads: int = 1
     head_dim: int = 512
-    q_lora_rank: int = 640
+    q_lora_rank: int = 320
     default_partial_rotary_factor = 64 / 512
     num_experts_per_tok: int = 6
     n_routed_experts: int = 256
@@ -57,8 +57,8 @@ class ShensiConfig(PreTrainedConfig):
     default_num_hash_layers = 3
     swiglu_limit: float = 10.0
     sliding_window: int = 128
-    o_groups: int = 4
-    o_lora_rank: int = 640
+    o_groups: int = 2
+    o_lora_rank: int = 320
     index_n_heads: int = 64
     index_head_dim: int = 128
     index_topk: int = 512
@@ -81,11 +81,11 @@ class ShensiConfig(PreTrainedConfig):
     attention_dropout: float = 0.0
     erc_loss_alpha: float = 0.5
     erc_loss_coef: float = 1.0
-    routed_expert_hidden_size: int | None = 640
+    routed_expert_hidden_size: int | None = 320
     hc_active_streams: int | None = 4
     hc_fixed_streams: int | None = 2
     hc_conv_kernels: tuple[int, ...] | list[int] | None = (4, 8, 12)
-    attn_res_block_size: int | None = 4
+    attn_res_block_size: int | None = 2
     _rope_type_labels = ("main", "compress")
 
     def validate_layer_type(self):
